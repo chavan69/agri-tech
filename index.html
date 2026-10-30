@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>02build AgriTech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans min-h-screen flex flex-col">
+
+    <!-- TOAST -->
+    <div id="toast" class="fixed top-4 right-4 z-[80] hidden max-w-sm rounded-2xl px-4 py-3 text-sm font-bold shadow-xl border"></div>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="fixed inset-0 bg-green-950 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl space-y-6">
+            <div class="text-center space-y-2">
+                <div class="bg-yellow-400 text-green-950 p-3 rounded-2xl w-14 h-14 flex items-center justify-center mx-auto font-black shadow">
+                    <i data-lucide="sprout" class="w-8 h-8"></i>
+                </div>
+                <h1 id="auth-title" class="text-2xl font-black text-slate-900">Welcome Back</h1>
+                <p class="text-xs text-slate-500">Secure Cloud Data Storage</p>
+            </div>
+            <form onsubmit="handleAuth(event)" class="space-y-4">
+                <div id="name-box">
+                    <label for="u-name" class="block text-xs font-bold uppercase text-slate-600 mb-1">Full Name</label>
+                    <input id="u-name" placeholder="Ramesh Gowda" autocomplete="name" class="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-600">
+                </div>
+                <div>
+                    <label for="u-phone" class="block text-xs font-bold uppercase text-slate-600 mb-1">Phone Number</label>
+                    <input id="u-phone" required type="tel" placeholder="+91 98450 11223" autocomplete="tel" class="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-600">
+                </div>
+                <div>
+                    <label for="u-pass" class="block text-xs font-bold uppercase text-slate-600 mb-1">Password</label>
+                    <input id="u-pass" required type="password" minlength="6" placeholder="••••••••" autocomplete="current-password" class="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-600">
+                </div>
+                <div id="extra-box" class="hidden space-y-4">
+                    <input id="u-loc" placeholder="Hubballi, Karnataka" autocomplete="address-level2" class="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-600">
+                    <select id="u-role" class="w-full border rounded-xl px-4 py-3 text-sm bg-white">
+                        <option>Farmer & Seller</option><option>Buyer / Trader</option>
+                    </select>
+                </div>
+                <button type="submit" id="auth-btn" class="w-full bg-green-700 hover:bg-green-800 disabled:opacity-60 text-white font-extrabold py-3.5 rounded-xl shadow text-sm">Log In →</button>
+            </form>
+            <div class="text-center">
+                <button onclick="toggleAuthMode()" class="text-xs text-green-700 font-extrabold hover:underline" id="toggle-lbl">Don't have an account? Sign Up</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="main-app" class="hidden flex-1 flex-col md:flex-row min-h-screen">
+        <aside id="sidebar" class="bg-green-900 text-white w-full md:w-72 flex flex-col justify-between p-5 border-r border-green-800">
+            <div>
+                <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-yellow-400 text-green-950 p-2.5 rounded-xl font-black"><i data-lucide="sprout" class="w-6 h-6"></i></div>
+                        <div>
+                            <h2 class="font-black text-lg">02build AgriTech</h2>
+                            <p class="text-[10px] text-green-300">Cloud Sync Active</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleSidebar()" class="md:hidden text-white" aria-label="Close menu"><i data-lucide="x" class="w-6 h-6"></i></button>
+                </div>
+                <nav class="space-y-1.5">
+                    <button onclick="switchTab('doctor')" id="btn-doctor" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-extrabold bg-yellow-400 text-green-950 shadow"><i data-lucide="shield-alert" class="w-5 h-5"></i>AI Plant Doctor</button>
+                    <button onclick="switchTab('market')" id="btn-market" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-extrabold hover:bg-green-800 text-green-100"><i data-lucide="shopping-bag" class="w-5 h-5"></i> 2. E-Market & Auction</button>
+                    <button onclick="switchTab('machinery')" id="btn-machinery" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-extrabold hover:bg-green-800 text-green-100"><i data-lucide="tractor" class="w-5 h-5"></i> 3. Machinery & Labor</button>
+                    <button onclick="switchTab('profile')" id="btn-profile" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-extrabold hover:bg-green-800 text-green-100"><i data-lucide="user" class="w-5 h-5"></i> User Profile</button>
+                </nav>
+            </div>
+            <div class="pt-6 border-t border-green-800">
+                <div class="flex items-center gap-3 px-3 py-2 bg-green-950/40 rounded-2xl mb-3">
+                    <div id="sb-init" class="w-9 h-9 rounded-xl bg-yellow-400 text-green-950 font-black flex items-center justify-center text-sm">R</div>
+                    <div class="min-w-0"><h4 id="sb-name" class="text-xs font-bold truncate">Ramesh</h4><p id="sb-role" class="text-[10px] text-green-300 truncate">Farmer</p></div>
+                </div>
+                <button onclick="signOut()" class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-950/40 text-red-200 text-xs font-bold border border-red-900"><i data-lucide="log-out" class="w-4 h-4"></i> Sign Out</button>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col min-w-0">
+            <header class="bg-white border-b px-6 py-4 flex items-center justify-between sticky top-0 z-20 shadow-sm">
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleSidebar()" class="p-2 rounded-xl bg-slate-100 text-slate-700" aria-label="Toggle menu"><i data-lucide="menu" class="w-5 h-5"></i></button>
+                    <h2 id="page-title" class="text-lg font-black text-slate-900">AI Plant Doctor & Diagnostics</h2>
+                </div>
+                <span id="db-badge" class="text-xs font-bold px-3 py-1.5 rounded-full bg-slate-100 text-slate-600">● Connecting…</span>
+            </header>
+
+            <main class="flex-1 p-6 overflow-y-auto">
+                <!-- TAB 1: DOCTOR -->
+                <section id="tab-doctor" class="grid lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-5 bg-white p-6 rounded-3xl border space-y-4">
+                        <h3 class="text-xl font-extrabold">Upload Leaf Photo</h3>
+                        <label class="border-2 border-dashed border-green-400 bg-green-50 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer text-center hover:bg-green-100 transition">
+                            <i data-lucide="upload" class="w-10 h-10 text-green-700 mb-2"></i>
+                            <span class="font-bold text-green-900 text-sm">Click to Upload Leaf Image</span>
+                            <span class="text-[10px] text-green-700 mt-1">JPG, PNG, WEBP or HEIC up to 8 MB</span>
+                            <input type="file" accept="image/*" onchange="handleImageUpload(event)" class="hidden">
+                        </label>
+                        <div id="image-preview-container" class="hidden mt-3">
+                            <img id="leaf-preview" src="" alt="Selected leaf" class="w-full h-40 object-cover rounded-xl border">
+                        </div>
+                        <p class="text-[11px] text-slate-500 leading-relaxed">Our Gemini-powered agronomist inspects the leaf for fungal patterns, chlorosis and nutrient stress, then saves the report to your account.</p>
+                    </div>
+                    <div class="lg:col-span-7" id="diagnostic-output">
+                        <div class="bg-white p-10 rounded-3xl border text-center flex flex-col items-center justify-center h-full min-h-[300px]">
+                            <i data-lucide="sprout" class="w-12 h-12 text-green-600 mb-3"></i>
+                            <h3 class="text-lg font-bold text-slate-800">Ready for AI Leaf Inspection</h3>
+                            <p class="text-xs text-slate-500 mt-1">Upload a clear photo of a single leaf for the best result.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 2: E-MARKET -->
+                <section id="tab-market" class="hidden space-y-6">
+                    <div class="flex flex-wrap gap-3 justify-between items-center bg-white p-6 rounded-3xl border">
+                        <div><h3 class="text-xl font-extrabold">E-Market & Live Auctions</h3><p class="text-xs text-slate-500 mt-1">Listings are stored in the shared database and visible to every farmer.</p></div>
+                        <button onclick="openModal('crop-modal')" class="bg-yellow-400 hover:bg-yellow-500 font-extrabold px-4 py-2.5 rounded-2xl text-sm flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> + List Harvest</button>
+                    </div>
+                    <div id="market-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </section>
+
+                <!-- TAB 3: MACHINERY -->
+                <section id="tab-machinery" class="hidden space-y-6">
+                    <div class="flex flex-wrap gap-3 justify-between items-center bg-white p-6 rounded-3xl border">
+                        <div><h3 class="text-xl font-extrabold">Machinery & Labor Hub</h3><p class="text-xs text-slate-500 mt-1">Rent equipment or post what you need.</p></div>
+                        <button onclick="openModal('machine-modal')" class="bg-yellow-400 hover:bg-yellow-500 font-extrabold px-4 py-2.5 rounded-2xl text-sm flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> + List Machine</button>
+                    </div>
+                    <div id="machinery-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+                </section>
+
+                <!-- TAB 4: PROFILE -->
+                <section id="tab-profile" class="hidden">
+                    <div class="grid lg:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-3xl border space-y-4">
+                            <div class="flex items-center gap-3">
+                                <div id="prof-avatar" class="w-12 h-12 rounded-2xl bg-yellow-400 text-green-950 font-black flex items-center justify-center text-lg">R</div>
+                                <div class="min-w-0">
+                                    <h3 id="prof-name" class="text-xl font-extrabold truncate">Ramesh</h3>
+                                    <p id="prof-info" class="text-xs text-slate-500 truncate">AgriTech account</p>
+                                </div>
+                            </div>
+                            <dl class="text-sm divide-y border-t pt-2">
+                                <div class="flex justify-between py-2.5"><dt class="text-slate-500">Phone</dt><dd id="prof-phone" class="font-bold">—</dd></div>
+                                <div class="flex justify-between py-2.5"><dt class="text-slate-500">Location</dt><dd id="prof-location" class="font-bold">—</dd></div>
+                                <div class="flex justify-between py-2.5"><dt class="text-slate-500">Role</dt><dd id="prof-role" class="font-bold">—</dd></div>
+                            </dl>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-extrabold">Diagnostic History</h3>
+                                <button onclick="fetchScans()" class="text-xs font-bold text-green-700 hover:underline flex items-center gap-1"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh</button>
+                            </div>
+                            <div id="scan-list" class="space-y-3"></div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- MODAL: CROP -->
+    <div id="crop-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-3">
+            <h3 class="text-lg font-extrabold">List Product</h3>
+            <input id="c-name" placeholder="Product Name (e.g., Onions)" class="w-full border rounded-xl px-3 py-2 text-sm">
+            <select id="c-cat" class="w-full border rounded-xl px-3 py-2 text-sm bg-white"><option>Vegetables</option><option>Fruits</option><option>Grains</option><option>Spices</option></select>
+            <select id="c-mode" class="w-full border rounded-xl px-3 py-2 text-sm bg-white"><option value="direct">Direct Buy</option><option value="auction">Live Auction</option></select>
+            <div class="grid grid-cols-2 gap-2">
+                <input id="c-price" type="number" min="1" step="0.01" placeholder="Price (₹/kg)" class="border rounded-xl px-3 py-2 text-sm">
+                <input id="c-qty" placeholder="Quantity (e.g. 500 kg)" class="border rounded-xl px-3 py-2 text-sm">
+            </div>
+            <p class="text-[11px] text-slate-500">Seller details are taken from your profile.</p>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeModal('crop-modal')" class="px-4 py-2 border rounded-xl text-xs">Cancel</button>
+                <button onclick="postCrop()" class="px-4 py-2 bg-green-700 text-white font-bold rounded-xl text-xs">Save Listing</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: MACHINE -->
+    <div id="machine-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-3">
+            <h3 class="text-lg font-extrabold">Add Machinery</h3>
+            <input id="m-title" placeholder="Title (e.g. Tractor / Solar Pump)" class="w-full border rounded-xl px-3 py-2 text-sm">
+            <select id="m-type" class="w-full border rounded-xl px-3 py-2 text-sm bg-white"><option value="available">For Rent</option><option value="requirement">Requirement</option></select>
+            <input id="m-rate" placeholder="Rate (₹500 / hr)" class="w-full border rounded-xl px-3 py-2 text-sm">
+            <input id="m-specs" placeholder="Specs" class="w-full border rounded-xl px-3 py-2 text-sm">
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeModal('machine-modal')" class="px-4 py-2 border rounded-xl text-xs">Cancel</button>
+                <button onclick="postMachine()" class="px-4 py-2 bg-green-700 text-white font-bold rounded-xl text-xs">Save Listing</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: BID -->
+    <div id="bid-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 space-y-3">
+            <h3 class="text-lg font-extrabold">Place a Bid</h3>
+            <p id="bid-item" class="text-xs text-slate-500"></p>
+            <p class="text-xs text-slate-700">Current bid: <span id="bid-current" class="font-extrabold text-green-900">₹0</span></p>
+            <input id="bid-amount" type="number" min="1" step="1" placeholder="Your bid (₹)" class="w-full border rounded-xl px-3 py-2 text-sm">
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeModal('bid-modal')" class="px-4 py-2 border rounded-xl text-xs">Cancel</button>
+                <button onclick="submitBid()" class="px-4 py-2 bg-green-700 text-white font-bold rounded-xl text-xs">Place Bid</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
