@@ -1,0 +1,32 @@
+# Local environment
+.venv/
+venv/
+backend/env/
+env/
+backend/.local/
+.local/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Secrets
+.env
+backend/.env
+*.pem
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Legacy SQLite database (superseded by Supabase)
+agritech.db
+*.sqlite
+*.sqlite3
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
